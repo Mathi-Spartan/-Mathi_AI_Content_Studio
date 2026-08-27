@@ -1,0 +1,211 @@
+{
+  "id": "vmc-cmc-dmarc",
+  "name": "VMC / CMC / DMARC",
+  "summary": "Mark certificates and email authentication. Sells the visible outcome — the logo and the checkmark in the inbox — then works backwards through the DMARC enforcement that is the actual blocker.",
+  "audience": "Marketing and brand owners who want the logo, plus the IT or email admin who has to make DMARC pass. The page has to satisfy both without boring either.",
+  "job": "Get an enquiry for a mark certificate, and qualify whether DMARC enforcement work needs to be sold alongside it — which it usually does.",
+  "sections": 8,
+  "tokens": ["partner.name", "partner.country", "partner.phone", "partner.email", "partner.whatsapp", "partner.site_url", "cta.url"],
+
+  "strategy_note": "Almost every prospect arrives wanting the Gmail blue checkmark and does not know that DMARC enforcement is the prerequisite. The page should let them arrive at that discovery themselves rather than opening with a lecture on SPF. Lead with the inbox, land on the readiness check.",
+
+  "content": [
+    {
+      "id": "hero",
+      "label": "Hero",
+      "required": true,
+      "purpose": "Show the outcome. The hero should be a realistic inbox render, not a headline about email security.",
+      "variants": [
+        {
+          "id": "hero-inbox",
+          "tone": "Show the outcome",
+          "eyebrow": "Mark certificates from {{partner.name}}",
+          "headline": "Your logo, next to every email you send.",
+          "lede": "A mark certificate puts your verified logo in the inbox before anyone opens the message — and, with a VMC, the blue checkmark next to your name in Gmail. It is the one trust signal a phishing sender cannot copy, because it is tied to a trademark they do not own.",
+          "cta_primary": "Check if we qualify",
+          "cta_secondary": "VMC or CMC?"
+        },
+        {
+          "id": "hero-phishing",
+          "tone": "Anti-phishing",
+          "eyebrow": "Mark certificates from {{partner.name}}",
+          "headline": "Anyone can spoof your name. Nobody can spoof your certificate.",
+          "lede": "Display name spoofing is trivial. A verified mark is not — it requires a registered trademark, a validated organisation and DMARC enforcement on your domain. That is why Gmail treats it as a signal worth a checkmark.",
+          "cta_primary": "Check if we qualify",
+          "cta_secondary": "See what is required"
+        }
+      ],
+      "signature_widget": "inbox-render",
+      "widget_note": "A realistic OPEN-MESSAGE Gmail render — toolbar, subject line with Inbox chip, round logo avatar, sender name with the blue rosette, the real verification tooltip text, to me ▾, Reply/Forward. State tabs for Today / with CMC / with VMC. An inbox-ROW mockup was tried on the Nexelt deliverable and rejected as unrealistic; use the open-message render."
+    },
+
+    {
+      "id": "vmc-vs-cmc",
+      "label": "VMC or CMC",
+      "required": true,
+      "purpose": "The single most-asked question. Answer it in a table, honestly, including where CMC falls short.",
+      "variants": [
+        {
+          "id": "compare-table",
+          "tone": "Comparison",
+          "eyebrow": "Two certificates, different doors",
+          "headline": "The difference is a trademark — and a checkmark.",
+          "lede": "Both are X.509 certificates delivered as PEM, both go in the same place in your DNS. What separates them is what you had to prove to get one.",
+          "table_from_facts": "mark_certificates",
+          "columns": ["", "VMC", "CMC"],
+          "rows": [
+            { "label": "What you must prove", "vmc": "A registered trademark with a recognised office, or a government mark", "cmc": "The logo has been publicly displayed on your domain for at least 12 months" },
+            { "label": "Gmail — logo", "vmc": "Yes", "cmc": "Yes" },
+            { "label": "Gmail — blue checkmark", "vmc": "Yes", "cmc": "No" },
+            { "label": "Apple Mail", "vmc": "Yes", "cmc": "No" },
+            { "label": "Yahoo Mail / AOL", "vmc": "Yes", "cmc": "Yes" },
+            { "label": "Typical time to issue", "vmc": "Longer — trademark verification", "cmc": "Shorter — archive verification" },
+            { "label": "DMARC enforcement required", "vmc": "Yes", "cmc": "Yes" }
+          ],
+          "recommendation": "If you hold a registered figurative trademark and Gmail matters to your programme, take the VMC — the premium over a CMC is small next to what the trademark itself cost, and the checkmark is the part people actually notice. If you have no trademark and no plan to register one, the CMC is the pragmatic choice: it validates faster and still puts your logo in Gmail and Yahoo.",
+          "honesty_note": "Do not bury the Apple Mail limitation. A customer who buys a CMC expecting Apple Mail rendering will come back angry, and that costs the partner more than the sale was worth."
+        }
+      ]
+    },
+
+    {
+      "id": "requirements",
+      "label": "What is required",
+      "required": true,
+      "purpose": "The full prerequisite list. This is where most readers discover they are not ready.",
+      "variants": [
+        {
+          "id": "reqs-checklist",
+          "tone": "Checklist",
+          "eyebrow": "Before a certificate is possible",
+          "headline": "Five things have to be true.",
+          "list_from_facts": "bimi.prerequisites",
+          "expanded": [
+            { "title": "SPF or DKIM passing", "body": "At least one has to authenticate on the sending domain. In practice you want both." },
+            { "title": "DMARC at enforcement", "body": "p=quarantine or p=reject. This is the one that stops most projects. A domain sitting at p=none is in monitoring mode, and BIMI will not light up." },
+            { "title": "An SVG Tiny PS logo", "body": "Square, under 32 KB, served over HTTPS. Not any SVG — the Tiny PS profile is a specific restricted subset. Most brand teams need their designer to re-export." },
+            { "title": "A BIMI DNS record", "body": "A TXT record at default._bimi.<your domain>, pointing at the logo and the certificate." },
+            { "title": "The certificate itself", "body": "A VMC or CMC in PEM, hosted over HTTPS and referenced by the a= tag." }
+          ],
+          "record_example_from_facts": "bimi.record_example"
+        }
+      ]
+    },
+
+    {
+      "id": "dmarc-ladder",
+      "label": "The DMARC ladder",
+      "required": true,
+      "purpose": "This is the real product. Most prospects need enforcement work sold alongside the certificate.",
+      "variants": [
+        {
+          "id": "ladder-three",
+          "tone": "Staged",
+          "eyebrow": "The part that takes the time",
+          "headline": "Getting to enforcement.",
+          "lede": "DMARC has three settings and most domains never leave the first one. The certificate is a purchase; enforcement is a project — usually a few weeks, occasionally a few months if the sending estate has grown without anyone mapping it.",
+          "stages_from_facts": "dmarc.policies",
+          "stage_detail": [
+            { "p": "none", "title": "Monitor", "body": "Reports start arriving. You find out how many services send mail as you — it is almost always more than anyone expected. Nothing is blocked yet." },
+            { "p": "quarantine", "title": "Quarantine", "body": "Mail that fails goes to spam. This is the first setting that counts as enforcement for BIMI, and the first that can hurt if your inventory is incomplete." },
+            { "p": "reject", "title": "Reject", "body": "Failing mail is refused outright. Full enforcement, and the strongest anti-spoofing position." }
+          ],
+          "blocker_from_facts": "dmarc.common_blocker",
+          "blocker_expanded": "SPF allows ten DNS lookups. Every sending service you add — the CRM, the ticketing tool, the payroll system, the marketing platform — consumes some. Cross the limit and SPF returns permerror, legitimate mail starts failing authentication, and the rollout stalls. Flattening the record by hand fixes it until the next service is added."
+        }
+      ]
+    },
+
+    {
+      "id": "valimail",
+      "label": "Automated DMARC",
+      "required": false,
+      "purpose": "The enforcement tooling upsell.",
+      "variants": [
+        {
+          "id": "valimail-digicert",
+          "tone": "Product",
+          "eyebrow": "Automated enforcement",
+          "headline": "DMARC without doing it by hand.",
+          "lede": "DigiCert acquired Valimail in September 2025, and the platform is becoming a DigiCert ONE capability. That puts the enforcement tooling and the mark certificate under one roof.",
+          "accuracy_warning": "Valimail is ACQUIRED, not partnered. Content describing a DigiCert–Valimail 'partnership' is pre-September-2025 and out of date. This error is widespread in competitor content — getting it right is a small credibility win.",
+          "products_from_facts": "dmarc.valimail.products",
+          "vendor_claims_from_facts": "dmarc.valimail.claims_from_vendor",
+          "claim_rule": "Attribute these. Write 'Valimail reports it is the only DMARC provider with FedRAMP authorization', not 'the only DMARC provider with FedRAMP authorization'. The claim may well be true; asserting a vendor's marketing as neutral fact is the habit that gets a partner page fact-checked."
+        }
+      ]
+    },
+
+    {
+      "id": "process",
+      "label": "How we run it",
+      "required": false,
+      "purpose": "Show the partner does the work, not the customer.",
+      "variants": [
+        {
+          "id": "process-four",
+          "tone": "Sequenced",
+          "eyebrow": "Working with {{partner.name}}",
+          "headline": "Four steps, and we hold most of them.",
+          "steps": [
+            { "n": 1, "title": "Readiness check", "body": "We look at your current SPF, DKIM and DMARC records and your trademark position, and tell you which certificate you actually qualify for — before you spend anything." },
+            { "n": 2, "title": "Get to enforcement", "body": "Map every legitimate sender, fix the SPF lookup problem, move to quarantine and then reject without breaking your mail." },
+            { "n": 3, "title": "Logo and certificate", "body": "Your designer's file re-exported to SVG Tiny PS, the certificate ordered and validated, both hosted over HTTPS." },
+            { "n": 4, "title": "Publish and verify", "body": "The BIMI record goes live and we test against Gmail, Apple Mail and Yahoo from real accounts before we call it done." }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "faq",
+      "label": "FAQ",
+      "required": false,
+      "variants": [
+        {
+          "id": "faq-vmc",
+          "tone": "Direct answers",
+          "eyebrow": "Questions we get weekly",
+          "headline": "Straight answers.",
+          "items": [
+            { "q": "Do I need a trademark?", "a": "For a VMC and the Gmail checkmark, yes — registered with a recognised office, or a government mark. For a CMC, no: twelve months of documented public use of the logo on your domain is enough." },
+            { "q": "How long does a trademark take?", "a": "Registration commonly runs a year or more depending on the office and whether anyone opposes. If you have not started, a CMC now and a VMC later is the sensible sequence rather than waiting." },
+            { "q": "Will this work in Outlook?", "a": "Not today. BIMI display is Gmail, Yahoo, AOL and Apple Mail. Anyone promising you universal inbox coverage is selling you something." },
+            { "q": "One certificate for all our brands?", "a": "No. One per unique logo and per unique base domain. Three brands with three logos means three certificates — which is a good reason to consolidate sending domains first." },
+            { "q": "Can we do BIMI without any certificate?", "a": "Yahoo and AOL will show a self-asserted logo with no certificate, provided DMARC is enforced. Gmail and Apple Mail will not. So it is possible, and it misses the two inboxes most people are actually asking about." },
+            { "q": "Does the logo increase open rates?", "a": "Vendor studies report uplift and we will happily send you them, but they are vendor studies of self-selecting brands. The defensible reason to do this is that your name in the inbox becomes hard to impersonate. Treat engagement lift as a bonus, not the business case." },
+            { "q": "What happens when the certificate expires?", "a": "The logo stops rendering. Mark certificates are annual, and the renewal has the same validation requirements as the first issue, so it is not a formality — put it on the same footing as your TLS renewals." }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "enquiry",
+      "label": "Enquiry form",
+      "required": true,
+      "purpose": "Qualify for certificate type AND DMARC state in one form. Both determine the quote.",
+      "variants": [
+        {
+          "id": "enquiry-qualify",
+          "tone": "Qualifying",
+          "eyebrow": "Start with a readiness check",
+          "headline": "Tell us your domain and we will tell you where you stand.",
+          "lede": "The check is free. We will come back with which certificate you qualify for today and what, if anything, has to change on your DMARC first.",
+          "fields": [
+            { "id": "company", "label": "Company", "required": true },
+            { "id": "name", "label": "Contact name", "required": true },
+            { "id": "email", "label": "Work email", "required": true },
+            { "id": "domain", "label": "Sending domain", "required": true, "hint": "The domain in your From: address" },
+            { "id": "trademark", "label": "Registered trademark for the logo?", "type": "select", "options": ["Yes, registered", "Application filed", "No", "Not sure"] },
+            { "id": "dmarc", "label": "Current DMARC policy", "type": "select", "options": ["Not sure — please check for us", "p=none", "p=quarantine", "p=reject", "No DMARC record"] },
+            { "id": "esp", "label": "Which services send mail as you", "hint": "e.g. Google Workspace, Salesforce, Mailchimp, a ticketing tool" },
+            { "id": "goal", "label": "What matters most", "type": "select", "options": ["The Gmail blue checkmark", "Logo in as many inboxes as possible", "Stopping spoofing of our domain", "All of it"] },
+            { "id": "agree", "label": "Consent to be contacted about this request", "type": "checkbox", "required": true }
+          ],
+          "submit": "Request my readiness check"
+        }
+      ]
+    }
+  ]
+}

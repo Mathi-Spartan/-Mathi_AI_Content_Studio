@@ -1,0 +1,197 @@
+{
+  "id": "automation-lp",
+  "name": "Automation landing page",
+  "summary": "A single scrolling upsell page for partners who already sell SSL and want to move their existing book onto automation products. No catalogue, no validation explainers — one argument, one form.",
+  "audience": "A partner's EXISTING certificate customers. They already understand what a certificate is. Do not explain DV vs OV to them.",
+  "job": "Convert a manual-renewal customer into an automation subscription, using their own renewal workload as the argument.",
+  "sections": 6,
+  "tokens": ["partner.name", "partner.country", "partner.phone", "partner.email", "partner.whatsapp", "partner.site_url", "cta.url"],
+
+  "constraints": [
+    "This page sits on the partner's own site alongside their existing SSL page. It must NOT duplicate or compete with that page.",
+    "HARD RULE — where a partner has their own certificate-automation or lifecycle product, the outage-and-risk narrative is THEIR territory. Drop the risk framing and lead on effort saved instead. This was an explicit constraint on the UCERT deliverable and applies to any partner with a competing in-house product.",
+    "Never state a renewal count as fact. Compute it from the customer's own certificate count, or leave it as an input."
+  ],
+
+  "content": [
+    {
+      "id": "hero",
+      "label": "Hero",
+      "required": true,
+      "purpose": "One sentence that makes an existing customer feel the recurring cost of their current process.",
+      "variants": [
+        {
+          "id": "hero-effort",
+          "tone": "Effort saved — safe for partners with a competing product",
+          "eyebrow": "Automation SSL from {{partner.name}}",
+          "headline": "Same certificates. None of the renewals.",
+          "lede": "You already buy your certificates from us. These are the same publicly trusted certificates, on plans where the key, the CSR, the validation and the installation happen without anyone opening a terminal.",
+          "cta_primary": "See the plans",
+          "cta_secondary": "Talk to us"
+        },
+        {
+          "id": "hero-arithmetic",
+          "tone": "Arithmetic",
+          "eyebrow": "Automation SSL from {{partner.name}}",
+          "headline": "Twelve renewals a year, per certificate, by 2029.",
+          "lede": "The 47-day cap is not a warning about the future — the first phase is already in effect. Every certificate you hold manually is about to need renewing roughly every month. These plans do it for you.",
+          "cta_primary": "See the plans",
+          "cta_secondary": "How it works"
+        },
+        {
+          "id": "hero-outage",
+          "tone": "Risk — DO NOT USE where the partner sells a competing CLM product",
+          "eyebrow": "Automation SSL from {{partner.name}}",
+          "headline": "The outage nobody scheduled.",
+          "lede": "An expired certificate does not degrade. It stops. As renewal frequency triples, the odds that one slips through a manual process stop being small.",
+          "cta_primary": "See the plans",
+          "cta_secondary": "How it works",
+          "gate": "partner.has_competing_clm === false"
+        }
+      ],
+      "signature_widget": "lifecycle-simulator",
+      "widget_note": "Date picker driving an animated track where each block is one certificate sized by the CA/B cap on its issue date. Counters: certificates in term, manual renewals, and zero with automation. Values computed from facts.validity_schedule."
+    },
+
+    {
+      "id": "the-arithmetic",
+      "label": "The arithmetic",
+      "required": true,
+      "purpose": "Turn an abstract policy change into the reader's own workload. This is the page's engine.",
+      "variants": [
+        {
+          "id": "arithmetic-calculator",
+          "tone": "Interactive",
+          "eyebrow": "Your own numbers",
+          "headline": "How many renewals are you signed up for?",
+          "lede": "Put in how many certificates you hold. The rest is the published schedule doing the maths.",
+          "inputs": [
+            { "id": "cert_count", "label": "Certificates you manage", "type": "number", "default": 25 },
+            { "id": "minutes_each", "label": "Minutes per renewal, honestly", "type": "number", "default": 45, "hint": "Key and CSR, validation, install, reload, verify, diarise. Most teams underestimate this." }
+          ],
+          "computed": [
+            { "id": "renewals_today", "formula": "ceil(365 / (200 * 0.66)) * cert_count", "label": "Renewals a year today" },
+            { "id": "renewals_2027", "formula": "ceil(365 / (100 * 0.66)) * cert_count", "label": "From March 2027" },
+            { "id": "renewals_2029", "formula": "ceil(365 / (47 * 0.66)) * cert_count", "label": "From March 2029" },
+            { "id": "hours_2029", "formula": "renewals_2029 * minutes_each / 60", "label": "Hours a year, by 2029" },
+            { "id": "renewals_automated", "formula": "0", "label": "With automation" }
+          ],
+          "honesty_note": "The two-thirds factor reflects normal practice — teams renew before expiry, not on the day. State the assumption on the page. A calculator that hides its assumptions is a calculator nobody trusts."
+        }
+      ]
+    },
+
+    {
+      "id": "how-it-works",
+      "label": "How it works",
+      "required": true,
+      "purpose": "Show that setup is small. The objection here is 'this will be a project', not 'I don't need it'.",
+      "variants": [
+        {
+          "id": "how-two-routes",
+          "tone": "Two routes",
+          "eyebrow": "Setup, once",
+          "headline": "Two ways in. Pick the one that matches your team.",
+          "routes": [
+            {
+              "title": "An agent on the server",
+              "for": "Teams with no ACME experience",
+              "steps": [
+                "We place the order and send you a setup link",
+                "You install the agent on the server — one command",
+                "The agent generates the key and CSR, completes validation and installs the certificate",
+                "It repeats all of that every cycle, with nothing on your calendar"
+              ],
+              "note": "Works on any server type. Not restricted to control panels."
+            },
+            {
+              "title": "Your own ACME client",
+              "for": "Teams already running certbot, Caddy or cert-manager",
+              "steps": [
+                "We place the order and send you EAB credentials — server URL, key ID, HMAC key",
+                "You register those credentials in the client you already run",
+                "Issue and renewal follow your existing pipeline",
+                "Wildcards validate over DNS"
+              ],
+              "note_from_facts": "automation_products.acme_clients"
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "plans",
+      "label": "Plans",
+      "required": true,
+      "purpose": "The product cards. Technical accuracy here is non-negotiable.",
+      "variants": [
+        {
+          "id": "plans-cards",
+          "tone": "Cards",
+          "eyebrow": "The plans",
+          "headline": "Six ways to stop renewing by hand.",
+          "products_from_facts": "automation_products.items",
+          "grouping": [
+            { "group": "Plan + Automate", "subtitle": "Agent or ACME — your choice", "filter": "methods includes agent" },
+            { "group": "Certificate-as-a-Service", "subtitle": "ACME only, many domains on one subscription", "filter": "methods === ['acme']" }
+          ],
+          "card_rules": [
+            "Render the method tag from the product's methods array. +Automate reads 'Agent + ACME'; CaaS reads 'ACME only'.",
+            "Wildcard products must carry the DNS validation note.",
+            "Price is a slot. Render partner pricing or omit the row — never a placeholder figure.",
+            "No 'best seller' or volume badges. Positioning badges describing FIT are fine ('Best for teams', 'Linux admin favourite'); claims about SALES are checkable and must be true."
+          ],
+          "caas_note_from_facts": "automation_products.caas_model"
+        }
+      ]
+    },
+
+    {
+      "id": "limits",
+      "label": "What it does not cover",
+      "required": true,
+      "purpose": "Credibility. A page that claims automation solves everything gets discounted entirely by a technical reader.",
+      "variants": [
+        {
+          "id": "limits-honest",
+          "tone": "Honest",
+          "eyebrow": "Before you commit",
+          "headline": "What automation does not cover.",
+          "rows": [
+            { "title": "OV and EV stay manual", "body": "These plans are DV. Anything that verifies your organisation still needs a person on both ends." },
+            { "title": "Wildcards need DNS access", "body": "DNS validation means writing a TXT record automatically — through a provider API or a delegated zone. Without that, wildcards stay manual." },
+            { "title": "CaaS has no agent", "body": "The Certificate-as-a-Service plans work only with an ACME client. If you cannot run one, take a +Automate plan instead." },
+            { "title": "It does not find certificates you forgot", "body": "Automation covers what you point it at. Certificates nobody inventoried are still the most common cause of an outage — audit first." }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "enquiry",
+      "label": "Lead form",
+      "required": true,
+      "purpose": "Short. This reader is already a customer — do not ask for what the partner already knows.",
+      "variants": [
+        {
+          "id": "lead-short",
+          "tone": "Short form",
+          "eyebrow": "Get started",
+          "headline": "Tell us what you are running and we will match a plan.",
+          "fields": [
+            { "id": "company", "label": "Company", "required": true },
+            { "id": "name", "label": "Contact name", "required": true },
+            { "id": "email", "label": "Email", "required": true },
+            { "id": "phone", "label": "Phone" },
+            { "id": "cert_count", "label": "Roughly how many certificates" },
+            { "id": "setup", "label": "Servers and setup", "hint": "e.g. 4 x Nginx on Ubuntu, one wildcard, DNS at Cloudflare" },
+            { "id": "route", "label": "Preferred route", "type": "select", "options": ["Not sure — advise me", "Agent on the server", "Our own ACME client"] },
+            { "id": "agree", "label": "Consent to be contacted about this request", "type": "checkbox", "required": true }
+          ],
+          "submit": "Send my request"
+        }
+      ]
+    }
+  ]
+}

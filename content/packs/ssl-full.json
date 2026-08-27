@@ -1,0 +1,332 @@
+{
+  "id": "ssl-full",
+  "name": "Full SSL site, automation-first",
+  "summary": "The complete partner SSL site. Sells the certificate range first, then routes every buyer toward automation using the shrinking-validity story as the reason. Enquiry-led, no cart.",
+  "audience": "A partner's existing and prospective customers — IT managers, hosting customers, procurement leads buying certificates in ones and tens.",
+  "job": "Make the partner look like the obvious local place to buy certificates, and make manual renewal feel like a decision rather than a default.",
+  "sections": 11,
+  "tokens": ["partner.name", "partner.legal_name", "partner.country", "partner.city", "partner.phone", "partner.email", "partner.whatsapp", "partner.site_url", "partner.ca_status", "cta.url"],
+
+  "content": [
+    {
+      "id": "hero",
+      "label": "Hero",
+      "required": true,
+      "purpose": "State what the partner sells and why buying it locally is better than buying it from a global checkout.",
+      "variants": [
+        {
+          "id": "hero-local",
+          "tone": "Local trust",
+          "eyebrow": "{{partner.ca_status}}",
+          "headline": "SSL certificates, bought and supported in {{partner.country}}.",
+          "lede": "DigiCert certificates and management platforms, sold with local invoicing, local support and help through validation and installation. No cart, no checkout — tell us what you need and we quote it.",
+          "cta_primary": "Request a quote",
+          "cta_secondary": "See certificates"
+        },
+        {
+          "id": "hero-automation",
+          "tone": "Automation-forward",
+          "eyebrow": "{{partner.ca_status}}",
+          "headline": "Certificates that renew without you.",
+          "lede": "Publicly trusted certificates from DigiCert, GeoTrust, RapidSSL, Thawte and Sectigo — supplied by {{partner.name}}, with the renewal work handled by an agent or your own ACME client.",
+          "cta_primary": "Request a quote",
+          "cta_secondary": "See how automation works"
+        },
+        {
+          "id": "hero-deadline",
+          "tone": "Deadline pressure",
+          "eyebrow": "{{partner.ca_status}}",
+          "headline": "Your certificates are about to get much shorter.",
+          "lede": "From March 2029 a publicly trusted certificate lasts 47 days. The work around each one does not shrink with it. {{partner.name}} supplies the certificates and the automation that absorbs the difference.",
+          "cta_primary": "Talk to us",
+          "cta_secondary": "See the timeline"
+        }
+      ],
+      "signature_widget": "order-term-card",
+      "widget_note": "Shows a fixed order term with progressively more certificates inside it as the validity cap drops. Counts are computed from facts.validity_schedule, never typed."
+    },
+
+    {
+      "id": "why-partner",
+      "label": "Why buy here",
+      "required": true,
+      "purpose": "Answer the unspoken question — why not buy direct from the CA. The answer is never price.",
+      "variants": [
+        {
+          "id": "why-service",
+          "tone": "Service-led",
+          "eyebrow": "Why buy through {{partner.name}}",
+          "headline": "The certificate is the easy part.",
+          "lede": "Anyone can sell you a certificate. What costs you time is everything either side of it — the CSR that was generated wrong, the validation that stalled, the intermediate nobody installed.",
+          "points": [
+            { "title": "Local invoicing", "body": "Billed in your currency, on your terms, with the paperwork your finance team already accepts." },
+            { "title": "Validation help", "body": "OV and EV need a real person to answer the CA's callback. We walk it through with you rather than emailing you a checklist." },
+            { "title": "Installation support", "body": "Leaf plus chain, on your server type, verified from outside before we call it done." },
+            { "title": "Platform onboarding", "body": "If you outgrow buying one at a time, we set up CertCentral or a full lifecycle manager and hand it over configured." }
+          ]
+        },
+        {
+          "id": "why-risk",
+          "tone": "Risk-led",
+          "eyebrow": "Why buy through {{partner.name}}",
+          "headline": "An expired certificate does not fail gracefully.",
+          "lede": "It does not slow anything down. The browser shows a full-page warning, APIs refuse to connect, payment callbacks stop. It goes from working to stopped at a moment nobody was watching.",
+          "points": [
+            { "title": "Someone is watching the dates", "body": "We track what you bought and when it lapses, so the reminder does not depend on one person's calendar." },
+            { "title": "Validation that does not stall", "body": "We handle the CA back-and-forth directly rather than forwarding you their email." },
+            { "title": "Local invoicing", "body": "Your currency, your payment terms, the documents your finance team accepts." },
+            { "title": "A number that answers", "body": "{{partner.phone}} — a person who knows your estate, not a global ticket queue." }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "the-change",
+      "label": "The 47-day change",
+      "required": true,
+      "purpose": "Establish the deadline as a fact of the industry, not a sales tactic. This section earns the automation pitch later.",
+      "variants": [
+        {
+          "id": "change-plain",
+          "tone": "Plain explainer",
+          "eyebrow": "What is changing",
+          "headline": "Certificate lifetimes are being cut to 47 days.",
+          "lede": "In April 2025 the CA/Browser Forum approved Ballot SC-081v3 with 29 votes in favour and none against. Every publicly trusted TLS certificate is affected, from every certificate authority. This is not a vendor policy you can shop around.",
+          "table_from_facts": "validity_schedule.phases",
+          "table_columns": ["In effect from", "Maximum validity", "Domain validation reuse"],
+          "footnote": "The ballot caps validity at 200 days in phase one. Certificate authorities issue slightly under the cap — DigiCert moved to a 199-day maximum on 24 February 2026. One point worth knowing: only DOMAIN validation reuse follows this accelerated schedule. Organisation and Extended Validation identity checks stay reusable for 398 days throughout."
+        }
+      ]
+    },
+
+    {
+      "id": "renewal-anatomy",
+      "label": "What one renewal costs",
+      "required": false,
+      "purpose": "Make the pain concrete and countable. This is the section that converts.",
+      "variants": [
+        {
+          "id": "anatomy-steps",
+          "tone": "Operational",
+          "eyebrow": "The job itself",
+          "headline": "What one renewal actually involves.",
+          "lede": "The reason shorter lifetimes hurt is not the certificate. It is the sequence around it, repeated per certificate, per server, every cycle.",
+          "steps": [
+            { "n": 1, "title": "Generate a key and CSR on the server", "body": "Correct key size, correct common name, correct SAN list. A mistake here is only discovered after issuance." },
+            { "n": 2, "title": "Complete domain validation", "body": "An HTTP file, a DNS TXT record, or an approver email. From March 2029 that validation can only be reused for 10 days, so it happens on almost every cycle." },
+            { "n": 3, "title": "Download and install the certificate and chain", "body": "The leaf alone is not enough. A missing intermediate works in your browser and fails on someone else's device." },
+            { "n": 4, "title": "Reload the service and verify", "body": "On production that means a change window, a colleague to approve it, and a check that the whole chain serves correctly." },
+            { "n": 5, "title": "Diarise the next one", "body": "And hope the person holding that reminder still works here in 47 days." }
+          ],
+          "closer": "Multiply that by the number of certificates you hold, then by roughly twelve renewals a year once the 47-day cap lands."
+        }
+      ]
+    },
+
+    {
+      "id": "certificates",
+      "label": "Certificate range",
+      "required": true,
+      "purpose": "The catalogue. DigiCert first, then the value brands.",
+      "variants": [
+        {
+          "id": "certs-tiered",
+          "tone": "Tiered catalogue",
+          "eyebrow": "What we supply",
+          "headline": "From a single site to a whole estate.",
+          "lede": "DigiCert is the flagship — the strongest warranty tiers and the widest recognition in tender documents. DigiCert also owns GeoTrust, RapidSSL and Thawte, so those are the same roots and the same browser trust at a lower price point.",
+          "catalogue_from_facts": "digicert_catalogue.items",
+          "warranty_slot": "{{partner.warranty_table}}",
+          "warranty_fallback": "Exact SKU, warranty figure and price are confirmed on your quote — the DigiCert range and its warranty tiers are revised periodically and we would rather give you the current number than a stale one.",
+          "validation_explainer": {
+            "headline": "DV, OV or EV — what is the difference?",
+            "rows": [
+              { "level": "DV", "verifies": "Control of the domain, nothing more", "issuance": "Minutes", "for": "Blogs, internal tools, anything where the domain is the only claim being made" },
+              { "level": "OV", "verifies": "The domain plus that your organisation legally exists", "issuance": "1–3 business days", "for": "Company sites, customer portals, most commercial work" },
+              { "level": "EV", "verifies": "The domain plus a full legal, operational and physical verification", "issuance": "3–7 business days", "for": "Finance, healthcare, government and public-sector tenders that name it" }
+            ]
+          },
+          "coverage_explainer": {
+            "headline": "Single, wildcard or multi-domain?",
+            "rows": [
+              { "type": "Single domain", "covers": "One hostname and usually its www form" },
+              { "type": "Wildcard", "covers": "A domain and all its first-level subdomains, on one certificate. Validates over DNS." },
+              { "type": "Multi-domain (SAN)", "covers": "Several unrelated hostnames on one certificate, with a slot count you choose" }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "platforms",
+      "label": "Management platforms",
+      "required": false,
+      "purpose": "Upsell path for customers past ~20 certificates.",
+      "variants": [
+        {
+          "id": "platforms-threshold",
+          "tone": "Threshold framing",
+          "eyebrow": "When a spreadsheet stops working",
+          "headline": "Past twenty certificates, tracking them by hand becomes the risk.",
+          "lede": "The failure is rarely the certificate. It is the one nobody knew about — issued years ago by someone who has since left, on a host that is not in the inventory.",
+          "platforms_from_facts": "digicert_catalogue.platforms",
+          "closer": "We configure either one and hand it over working, with your existing certificates already discovered and loaded."
+        }
+      ]
+    },
+
+    {
+      "id": "automation",
+      "label": "Automation products",
+      "required": true,
+      "purpose": "The commercial heart of the page. Must be technically exact — earlier partner pages got the agent/ACME capability wrong.",
+      "variants": [
+        {
+          "id": "auto-two-routes",
+          "tone": "Two routes",
+          "eyebrow": "Automation",
+          "headline": "Certificates that issue, install and renew without you.",
+          "lede": "The same publicly trusted DV certificates, with the whole sequence — key, CSR, validation, installation, reissue — handled for you. Set it up once and the 47-day schedule stops being your problem.",
+          "routes": [
+            {
+              "label": "Route 1",
+              "title": "Installation agent",
+              "body": "Install once on the server. The agent generates the key and CSR, completes validation, installs the certificate, and repeats the whole thing every cycle. No ACME knowledge needed, and it works on any server type — not just control panels.",
+              "fits": ["Any Linux or Windows server", "Teams with no ACME experience", "Mixed estates without a pipeline"]
+            },
+            {
+              "label": "Route 2",
+              "title": "ACME",
+              "body": "You receive EAB credentials — an ACME server URL, a key ID and an HMAC key — and register them in the client you already run. The same flow you may already use for free certificates, issuing paid certificates from a commercial CA instead.",
+              "fits_from_facts": "automation_products.acme_clients",
+              "extra": ["Fits existing pipelines and Kubernetes", "Wildcards validate over DNS"]
+            }
+          ],
+          "products_from_facts": "automation_products.items",
+          "capability_rule": "The four +Automate products support BOTH agent and ACME on any server type. The two Certificate-as-a-Service products are ACME-only. Render tags from the product's methods array — never hand-type them.",
+          "limits": {
+            "headline": "What automation does not cover.",
+            "rows": [
+              { "title": "OV and EV stay manual", "body": "Automation covers DV. Anything requiring an organisation check still needs a human on both sides." },
+              { "title": "Wildcards need DNS access", "body": "DNS validation means the automation needs to write a TXT record — through an API or a delegated zone." },
+              { "title": "ACME plans need an ACME client", "body": "The Certificate-as-a-Service products have no agent. If you cannot run an ACME client, choose a +Automate plan instead." }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "migration-path",
+      "label": "How to start",
+      "required": false,
+      "purpose": "Reduce the perceived size of the change. Order matters — discovery before tooling.",
+      "variants": [
+        {
+          "id": "path-four",
+          "tone": "Sequenced",
+          "eyebrow": "Getting there",
+          "headline": "A sensible order to work in.",
+          "steps": [
+            { "n": 1, "title": "Find what you have", "body": "Certificates nobody inventoried are the ones that cause the outage. Audit before you buy any tooling — this step is free and it is the one that matters most." },
+            { "n": 2, "title": "Split by what can be automated", "body": "DV certificates on servers you control move first. OV and EV, and anything on hardware you cannot reach, stay manual for now." },
+            { "n": 3, "title": "Move the DV volume", "body": "This is usually the bulk of the count and the bulk of the recurring work. It is also the cheapest to move." },
+            { "n": 4, "title": "Track the rest", "body": "Whatever stays manual goes into a platform with real expiry alerting, not a spreadsheet and a calendar invite." }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "guides",
+      "label": "Guides and FAQ",
+      "required": false,
+      "purpose": "Inbound search traffic and objection handling. Answer honestly — an evasive FAQ reads as a sales page.",
+      "variants": [
+        {
+          "id": "faq-standard",
+          "tone": "Direct answers",
+          "eyebrow": "Questions we get weekly",
+          "headline": "Straight answers.",
+          "groups": [
+            {
+              "group": "Before you buy",
+              "items": [
+                { "q": "Which validation level do I actually need?", "a": "If your site takes payment, holds customer accounts or carries your company name, OV is the sensible floor. DV is fine for a blog or an internal tool. EV is worth it when a tender or a regulator names it — the browser no longer shows a green bar for it, so the value is in the paperwork, not the padlock." },
+                { "q": "Is a wildcard cheaper than several single certificates?", "a": "Usually yes past three or four subdomains, and always simpler to renew. The trade-off is blast radius: one private key covers everything under that domain, so if it leaks, everything under it is affected." },
+                { "q": "What is the warranty actually for?", "a": "It covers the relying party — the end user — if the certificate is mis-issued and they suffer a loss as a result. It is not insurance for your business, and no one has ever claimed on one in ordinary circumstances. Treat it as a tender checkbox, not a product feature." },
+                { "q": "Do free certificates do the same job?", "a": "Cryptographically, yes — a DV certificate is a DV certificate. What you do not get is organisation validation, a warranty, a support line, or anything to show a procurement team. For a company site under audit, that gap is the whole point." }
+              ]
+            },
+            {
+              "group": "CSR and validation",
+              "items": [
+                { "q": "Why did my validation stall?", "a": "Nine times in ten it is the approver email going to an address nobody reads, or a DNS TXT record that was added to the wrong zone. Send us the order number and we will tell you which one it is." },
+                { "q": "Can I reuse an old CSR?", "a": "Technically yes, and you should not. Reusing a CSR means reusing the key pair, which defeats the reason lifetimes are shrinking in the first place." },
+                { "q": "How long does validation last now?", "a": "Domain validation reuse drops with the schedule — 200 days today, 100 days from March 2027, 10 days from March 2029. Organisation and Extended Validation identity checks are separate and stay reusable for 398 days." }
+              ]
+            },
+            {
+              "group": "Installation",
+              "items": [
+                { "q": "It works in my browser but fails elsewhere. Why?", "a": "Almost always a missing intermediate. Your browser has the chain cached from another site; a fresh client does not. Install the full chain, then test from outside your network." },
+                { "q": "Do I need to restart the whole server?", "a": "No — reloading the web service is enough on every common stack. Reload, do not restart, so existing connections are not dropped." },
+                { "q": "Can you install it for us?", "a": "Yes. Send us access or get on a call and we will do it with you. There is no extra charge for certificates bought through us." }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "enquiry",
+      "label": "Enquiry form",
+      "required": true,
+      "purpose": "Capture the lead with enough detail to quote without a second email.",
+      "variants": [
+        {
+          "id": "enquiry-quote",
+          "tone": "Quote request",
+          "eyebrow": "Get a quote",
+          "headline": "Tell us what you are securing and we will come back with a price.",
+          "lede": "No account needed. If you are not sure which product fits, describe the setup and we will tell you.",
+          "fields": [
+            { "id": "company", "label": "Company", "required": true },
+            { "id": "name", "label": "Contact name", "required": true },
+            { "id": "email", "label": "Email", "required": true },
+            { "id": "phone", "label": "Phone", "required": true },
+            { "id": "product", "label": "Product of interest", "type": "select", "options_from_facts": "digicert_catalogue.items + automation_products.items" },
+            { "id": "validation", "label": "Validation level", "type": "select", "options": ["Not sure", "DV", "OV", "EV"] },
+            { "id": "domains", "label": "Domains to secure" },
+            { "id": "qty", "label": "Quantity" },
+            { "id": "expiry", "label": "Current certificate expires" },
+            { "id": "server", "label": "Server and setup" },
+            { "id": "notes", "label": "Anything else we should know", "type": "textarea" },
+            { "id": "agree", "label": "Consent to be contacted about this request", "type": "checkbox", "required": true }
+          ],
+          "submit": "Send my request",
+          "delivery_default": "mailto:{{partner.email}}",
+          "delivery_warning": "A mailto form silently loses the lead if the visitor has no mail client configured. Prefer a posted endpoint where the partner can host one; keep mailto only as the no-backend fallback and always show the address as text too."
+        }
+      ]
+    },
+
+    {
+      "id": "contact",
+      "label": "Contact",
+      "required": true,
+      "variants": [
+        {
+          "id": "contact-simple",
+          "tone": "Plain",
+          "headline": "Prefer to talk?",
+          "lede": "Call {{partner.phone}} or email {{partner.email}}. If you would rather message, WhatsApp is {{partner.whatsapp}}.",
+          "conditional": "Omit the WhatsApp sentence entirely when partner.whatsapp is empty. Never render an empty contact method."
+        }
+      ]
+    }
+  ]
+}

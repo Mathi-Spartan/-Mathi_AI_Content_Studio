@@ -1,0 +1,124 @@
+{
+  "_meta": {
+    "id": "facts",
+    "title": "Canonical facts",
+    "purpose": "Single source of truth for every number, date and product name used across all content packs. Never restate a fact in a pack — reference it here. When a fact changes, it changes once.",
+    "last_verified": "2026-08-27",
+    "verify_cadence_days": 90
+  },
+
+  "validity_schedule": {
+    "ballot": "CA/Browser Forum Ballot SC-081v3",
+    "approved": "2025-04-11",
+    "vote": "29 in favour, 0 against",
+    "proposed_by": "Apple, sponsored by Sectigo",
+    "source": "https://cabforum.org/2025/04/11/ballot-sc081v3-introduce-schedule-of-reducing-validity-and-data-reuse-periods/",
+    "phases": [
+      { "from": "2026-03-15", "max_validity_days": 200, "dcv_reuse_days": 200, "label": "Phase 1", "status": "in effect" },
+      { "from": "2027-03-15", "max_validity_days": 100, "dcv_reuse_days": 100, "label": "Phase 2", "status": "scheduled" },
+      { "from": "2029-03-15", "max_validity_days": 47,  "dcv_reuse_days": 10,  "label": "Phase 3", "status": "scheduled" }
+    ],
+    "previous_max_days": 398,
+    "nuance": {
+      "ca_buffer": "The ballot caps at 200/100/47. Certificate authorities issue slightly under the cap to avoid edge-case rejections — DigiCert moved to a maximum 199-day validity on 24 February 2026. Quote the ballot number for policy, the CA number for what a customer actually receives.",
+      "sii_reuse": "Subject Identity Information reuse for OV and EV dropped from 825 days to 398 days on 15 March 2026 and stays at 398 through all three phases. Only DOMAIN validation reuse follows the accelerated schedule — this is the single most commonly misstated fact in competitor content.",
+      "renewal_practice": "Common practice is to renew at roughly two-thirds of remaining lifetime, so a 47-day certificate is renewed about every 31 days — roughly 12 times a year per certificate."
+    }
+  },
+
+  "automation_products": {
+    "_note": "Sourced from the GoGetSSL partner catalogue. The four +Automate products support BOTH agent-based install AND ACME, on any server type. Sectigo/PositiveSSL CaaS is ACME-only. This correction matters — earlier partner pages wrongly described +Automate as control-panel-only.",
+    "items": [
+      { "id": "rapidssl-automate", "name": "RapidSSL Plan + Automate", "ca": "RapidSSL", "validation": "DV", "coverage": "single", "methods": ["agent", "acme"], "product_code": 400, "store_path": "rapidssl/rapidssl-automate.aspx" },
+      { "id": "rapidssl-wc-automate", "name": "RapidSSL Wildcard Plan + Automate", "ca": "RapidSSL", "validation": "DV", "coverage": "wildcard", "methods": ["agent", "acme"], "product_code": 401, "dcv_note": "Wildcards validate over DNS only.", "store_path": "rapidssl/rapidssl-wildcard-automate.aspx" },
+      { "id": "geotrust-automate", "name": "GeoTrust DV Plan + Automate", "ca": "GeoTrust", "validation": "DV", "coverage": "single", "methods": ["agent", "acme"], "product_code": 402, "store_path": "geotrust/geotrust-dv-automate.aspx" },
+      { "id": "geotrust-wc-automate", "name": "GeoTrust DV Wildcard Plan + Automate", "ca": "GeoTrust", "validation": "DV", "coverage": "wildcard", "methods": ["agent", "acme"], "product_code": 403, "dcv_note": "Wildcards validate over DNS only.", "store_path": "geotrust/geotrust-wildcard-dv-automate.aspx" },
+      { "id": "positivessl-caas", "name": "PositiveSSL ACME Certificate-as-a-Service", "ca": "Sectigo", "validation": "DV", "coverage": "subscription", "methods": ["acme"], "product_code": null, "product_code_status": "NOT SUPPLIED — leave blank in output, never guess", "store_path": "sectigo/positivessl-acme-certificate-as-a-service.aspx" },
+      { "id": "sectigo-caas", "name": "Sectigo ACME Certificate-as-a-Service", "ca": "Sectigo", "validation": "DV", "coverage": "subscription", "methods": ["acme"], "product_code": 300, "store_path": "sectigo/acme-certificate-as-a-service.aspx" }
+    ],
+    "acme_clients": ["certbot", "acme.sh", "Caddy", "lego", "cert-manager", "Traefik"],
+    "caas_model": "A subscription covering many domains. Domains are added at any time and charged pro-rata. Wildcard coverage is an option on the same product — there is no separate wildcard CaaS SKU."
+  },
+
+  "digicert_catalogue": {
+    "_note": "SKU names only. Warranty figures are deliberately absent — they are revised periodically and MUST come from the partner portal. Never render a warranty number that is not supplied.",
+    "warranty_policy": "BLANK_UNLESS_SUPPLIED",
+    "items": [
+      { "name": "DigiCert Secure Site Pro", "validation": "OV or EV", "tier": "highest" },
+      { "name": "DigiCert Secure Site", "validation": "OV or EV", "tier": "high" },
+      { "name": "DigiCert Basic EV", "validation": "EV", "tier": "standard" },
+      { "name": "DigiCert Basic OV", "validation": "OV", "tier": "standard" },
+      { "name": "DigiCert Wildcard", "validation": "OV", "coverage": "wildcard" },
+      { "name": "DigiCert Multi-Domain (SAN)", "validation": "OV or EV", "coverage": "multi-domain" }
+    ],
+    "brand_family": "DigiCert owns GeoTrust, RapidSSL and Thawte — same roots, same browser trust, lighter warranty tiers, lower prices.",
+    "platforms": [
+      { "name": "DigiCert CertCentral", "what": "Console for issuing, renewing, reissuing and revoking public TLS, with ACME automation built in." },
+      { "name": "DigiCert Trust Lifecycle Manager", "what": "Full CLM across public and private trust — discovery, policy, automation across the estate." }
+    ]
+  },
+
+  "bimi": {
+    "prerequisites": [
+      "SPF or DKIM passing on the sending domain",
+      "DMARC at enforcement — p=quarantine or p=reject. p=none will not light up BIMI",
+      "SVG Tiny PS logo, square aspect ratio, under 32 KB, served over HTTPS",
+      "A BIMI DNS TXT record at default._bimi.<domain>",
+      "A mark certificate in PEM referenced by the a= tag (required for Gmail and Apple Mail)"
+    ],
+    "record_example": "default._bimi.example.com. IN TXT \"v=BIMI1; l=https://example.com/logo.svg; a=https://example.com/mark.pem\"",
+    "inbox_support": [
+      { "provider": "Gmail", "logo_without_cert": false, "logo_with_cmc": true, "logo_with_vmc": true, "checkmark": "VMC only", "note": "The blue authenticated checkmark is reserved for VMC. A CMC shows the logo but never the checkmark." },
+      { "provider": "Apple Mail", "logo_without_cert": false, "logo_with_cmc": false, "logo_with_vmc": true, "checkmark": "n/a", "note": "Requires a VMC from a qualified CA." },
+      { "provider": "Yahoo Mail / AOL", "logo_without_cert": true, "logo_with_cmc": true, "logo_with_vmc": true, "checkmark": "n/a", "note": "Most permissive — will display a self-asserted logo with no certificate, but DMARC enforcement is still required." }
+    ]
+  },
+
+  "mark_certificates": {
+    "vmc": {
+      "name": "Verified Mark Certificate",
+      "requires": "A registered trademark with a recognised office (USPTO, EUIPO, WIPO or a national registry), or a government mark.",
+      "unlocks": "Logo in Gmail, Yahoo and Apple Mail, plus the Gmail blue authenticated checkmark.",
+      "issuers": ["DigiCert", "Sectigo", "GlobalSign"],
+      "format": "X.509, delivered as PEM"
+    },
+    "cmc": {
+      "name": "Common Mark Certificate",
+      "requires": "No trademark. Proof the logo has been in continuous public use on the domain for at least 12 months, verified against web archives.",
+      "unlocks": "Logo in Gmail and Yahoo. No checkmark. Not accepted by Apple Mail.",
+      "issuers": ["DigiCert", "Sectigo"],
+      "format": "X.509, delivered as PEM"
+    },
+    "scope_rule": "One certificate per unique logo and per unique base domain. Three brands with three logos need three certificates. Consolidating sending domains reduces ongoing cost.",
+    "pricing_policy": "SLOT — resale price varies per partner and per region. Never hardcode a figure; render from partner.pricing or omit."
+  },
+
+  "dmarc": {
+    "policies": [
+      { "p": "none", "means": "Monitor only. Reports arrive, nothing is blocked. BIMI will not work here.", "stage": 1 },
+      { "p": "quarantine", "means": "Failing mail goes to spam. Counts as enforcement for BIMI.", "stage": 2 },
+      { "p": "reject", "means": "Failing mail is refused at the gateway. Full enforcement.", "stage": 3 }
+    ],
+    "common_blocker": "The SPF 10-lookup limit. Organisations with many sending services silently exceed it, legitimate mail starts failing, and the rollout stalls at p=none.",
+    "valimail": {
+      "status": "Acquired by DigiCert, announced 16 September 2025. Becoming a DigiCert ONE capability. Do NOT describe this as a partnership — that framing is out of date.",
+      "products": ["Valimail Enforce — automates DMARC, DKIM and SPF to enforcement", "Valimail Amplify — hosts the BIMI logo and publishes the record"],
+      "claims_from_vendor": [
+        "Only DMARC provider with FedRAMP authorization",
+        "Invented hosted DMARC in 2015",
+        "92,000+ clients"
+      ],
+      "claim_handling": "These are vendor claims. Attribute them ('Valimail reports…') rather than asserting them as neutral fact."
+    }
+  },
+
+  "claim_discipline": {
+    "rule": "Every number rendered to a partner page must trace to this file or to a value the partner supplied. If neither exists, the slot renders empty and pre-flight flags it.",
+    "never_assert": [
+      "Warranty amounts not supplied from the partner portal",
+      "Sales-volume or 'best seller' claims",
+      "Open-rate / click-through uplift percentages — these come from vendor marketing studies and must be attributed or omitted",
+      "Competitor pricing"
+    ]
+  }
+}
