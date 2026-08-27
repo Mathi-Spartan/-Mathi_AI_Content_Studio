@@ -1,4 +1,7 @@
-# Mathi AI Content Studio
+# PLATE — partner site studio
+
+Intake → Studio → Templates → Export. Reads a partner's live site, brands a page
+from the content library, and exports one self-contained HTML file.
 
 The content library behind partner SSL / automation / VMC sites.
 
@@ -48,3 +51,27 @@ read nothing. All access goes through the serverless function.
 ## Local
 
     npm install && npm run dev
+
+## Design DNA
+
+`src/dna.js` holds every visual axis: 24 palettes, 20 type pairings, 6 surfaces,
+4 densities, 5 corner radii, 4 motion modes, 10 skeletons, 54 presets.
+
+54 presets are NOT 54 codebases. Each is a skeleton (section order) plus a style
+recipe over the same content packs. Fix a sentence once and all 54 change.
+
+### Fingerprint
+
+Every design encodes to four hex pairs — `9F:2C:AE:04` — one per axis:
+palette, type, layout, motion. Click a pair in the studio gutter to lock that
+axis; SHUFFLE re-rolls only what is unlocked.
+
+## Site reader
+
+`api/read-site.js` fetches a partner's homepage server-side (CORS makes a browser
+fetch impossible) and extracts name, legal name, contact block, declared palette,
+fonts, nav and whether the site already sells SSL. It will fail on Cloudflare and
+JS-rendered sites — roughly one in five — so the manual fields on Intake are a
+first-class path, not a fallback.
+
+Private and loopback hosts are rejected: this endpoint takes a user-supplied URL.
