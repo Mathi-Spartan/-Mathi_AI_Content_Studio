@@ -1,6 +1,7 @@
 import React from "react";
-import { FAMILY, Hero, Points, TableSec, Steps, Products, Faq, Form, Contact, Head } from "./blocks.jsx";
-import { SKELETONS, TYPES, SURFACES, DENSITY, CORNERS, pick } from "./dna.js";
+import { renderSection, FAMILY, Head } from "./blocks.jsx";
+import { TYPES, DENSITY, CORNERS, pick } from "./dna.js";
+import { geoName, validMods, GEO } from "./geometry.js";
 
 const M = (s, p) => typeof s === "string"
   ? s.replace(/\{\{\s*partner\.([a-z_]+)\s*\}\}/gi, (m, k) => (p[k] || "").trim() || "\u27E8" + k + "\u27E9")
@@ -22,8 +23,9 @@ export function compToCss(comp) {
   };
 }
 
-export default function PartnerPage({ pack, partner, comp, choice }) {
-  const order = comp.order;
+/* editable=true renders the hover toolbar per section (the canvas IS the editor).
+   editable=false is used for mini previews and export. */
+export default function PartnerPage({ pack, partner, comp, choice, editable, onOpen, onCycle, onDice }) {
   const secOf = id => pack.content.filter(s => s.id === id)[0];
   const varOf = s => s.variants.filter(v => v.id === choice[pack.id + ":" + s.id])[0] || s.variants[0];
   const brand = (partner.name || "Partner").toUpperCase();
@@ -38,30 +40,34 @@ export default function PartnerPage({ pack, partner, comp, choice }) {
       </div>
       <div className={"pp-nav nav-" + comp.dna.nav}>
         <span className="pp-logo">{brand}</span>
-        <nav>{order.filter(id => ["hero", "enquiry", "contact"].indexOf(id) < 0).slice(0, 4).map(id => {
+        <nav>{comp.order.filter(id => ["hero", "enquiry", "contact"].indexOf(id) < 0).slice(0, 4).map(id => {
           const s = secOf(id); return s ? <a key={id}>{s.label}</a> : null;
         })}</nav>
         <span className="pp-cta">Get a quote</span>
       </div>
 
-      {order.map((id, i) => {
+      {comp.order.map((id, i) => {
         const s = secOf(id); if (!s) return null;
         const v = varOf(s);
-        const block = comp.blocks[id] || "default";
+        const geo = comp.blocks[id] || { g: "default", m: "default" };
         const fam = FAMILY[id] || "points";
         const head = <Head v={v} partner={partner} />;
-        const cls = anim && i > 0 ? anim : "";
-        const props = { block, v, partner, head, sectionId: id, pack, dna: comp.dna };
-        let node;
-        if (fam === "hero") node = <Hero {...props} />;
-        else if (fam === "points") node = <Points {...props} />;
-        else if (fam === "table") node = <TableSec {...props} />;
-        else if (fam === "steps") node = <Steps {...props} />;
-        else if (fam === "products") node = <Products {...props} />;
-        else if (fam === "faq") node = <Faq {...props} />;
-        else if (fam === "form") node = <Form {...props} />;
-        else node = <Contact {...props} />;
-        return <div key={id} className={"pp-slot " + cls} data-i={i}>{node}</div>;
+        const node = renderSection({ id, geo, v, partner, pack, head });
+        return (
+          <div key={id} className={"pp-slot" + (i > 0 ? anim : "") + (editable ? " editable" : "")} data-i={i}>
+            {editable && (
+              <div className="canvas-tools" onClick={e => e.stopPropagation()}>
+                <span className="ct-name">{s.label}</span>
+                <button className="ct-b" title="Previous layout" onClick={() => onCycle(id, -1)}>‹</button>
+                <span className="ct-geo" onClick={() => onOpen(id)}>{geoName(fam, geo.g)}</span>
+                <button className="ct-b" title="Next layout" onClick={() => onCycle(id, 1)}>›</button>
+                <button className="ct-b dice" title="Surprise me" onClick={() => onDice(id)}>⚄</button>
+                <button className="ct-b more" title={"All " + (GEO[fam] || []).length + " layouts"} onClick={() => onOpen(id)}>⊞</button>
+              </div>
+            )}
+            {node}
+          </div>
+        );
       })}
 
       <div className="pp-foot">
@@ -73,4 +79,16 @@ export default function PartnerPage({ pack, partner, comp, choice }) {
   );
 }
 
-export { SKELETONS };
+/* One section rendered alone — used by the layout drawer tiles. */
+export function SectionOnly({ pack, partner, comp, choice, id, geo }) {
+  const s = pack.content.filter(x => x.id === id)[0];
+  if (!s) return null;
+  const v = s.variants.filter(x => x.id === choice[pack.id + ":" + s.id])[0] || s.variants[0];
+  const head = <Head v={v} partner={partner} />;
+  const css = compToCss(comp);
+  return (
+    <div className={"pp surf-" + comp.dna.surface + " acc-" + comp.dna.accentShape} style={css}>
+      {renderSection({ id, geo, v, partner, pack, head })}
+    </div>
+  );
+}
